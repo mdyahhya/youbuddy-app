@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>YouBuddy — Admin Dashboard</title>
+  
+  <!-- Supabase Official JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* ==========================================================================
+       YouBuddy Admin Design System (Navy #0B3D91, Clean White #FFFFFF, Black #000000)
+       ========================================================================== */
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8FAFC;
+      --bg-tertiary: #F1F5F9;
+      --accent-color: #0B3D91;
+      --accent-hover: #082C6A;
+      --accent-light: #EBF1FA;
+      --accent-border: #D0DFF2;
+      --text-primary: #000000;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --text-inverse: #FFFFFF;
+      --border-subtle: #E2E8F0;
+      --border-medium: #CBD5E1;
+      --color-success: #16A34A;
+      --color-success-bg: #DCFCE7;
+      --color-error: #DC2626;
+      --color-error-bg: #FEE2E2;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(11, 61, 145, 0.08);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+
+    .admin-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: var(--bg-primary);
+      min-height: 100vh;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .admin-topbar {
+      height: 64px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--bg-primary);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .brand-title span {
+      color: var(--accent-color);
+    }
+
+    .admin-badge {
+      background-color: var(--accent-color);
+      color: var(--text-inverse);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .nav-links-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-link-student {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--accent-border);
+      background-color: var(--accent-light);
+      transition: all 0.2s;
+    }
+
+    .btn-link-student:hover {
+      background-color: var(--accent-color);
+      color: var(--text-inverse);
+    }
+
+    /* Content & Tabs */
+    .admin-main {
+      padding: 24px;
+      flex: 1;
+    }
+
+    .admin-tabs-nav {
+      display: flex;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      gap: 6px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background-color: var(--bg-primary);
+      color: var(--accent-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Cards & Forms */
+    .admin-card {
+      background-color: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+
+    .card-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Post Type Select Grid */
+    .type-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .type-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .type-pill {
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 10px;
+      background-color: var(--bg-secondary);
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .type-pill svg {
+      width: 22px;
+      height: 22px;
+      color: var(--accent-color);
+    }
+
+    .type-pill.active {
+      border-color: var(--accent-color);
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--text-primary);
+      background-color: var(--bg-primary);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.1);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-color);
+      color: var(--text-inverse);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: var(--border-medium);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-tertiary);
+    }
+
+    .btn-danger {
+      background-color: var(--color-error-bg);
+      color: var(--color-error);
+      border-color: #FECACA;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    /* YouTube Preview Box & Custom Play Overlay */
+    .yt-fetch-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .yt-fetch-row input {
+      flex: 1;
+    }
+
+    .preview-box {
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px dashed var(--accent-border);
+      border-radius: var(--radius-md);
+      background-color: var(--accent-light);
+    }
+
+    .video-thumb-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background-color: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .video-thumb-container img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .custom-play-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(11, 61, 145, 0.92);
+      border: 2px solid #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .custom-play-badge svg {
+      width: 28px;
+      height: 28px;
+      fill: #FFFFFF;
+      margin-left: 3px;
+    }
+
+    /* MCQ Option Builder */
+    .mcq-builder-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .mcq-radio {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--color-success);
+      cursor: pointer;
+    }
+
+    /* Manage Items List */
+    .items-table {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background-color: var(--bg-secondary);
+    }
+
+    .item-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .item-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-navy {
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+    }
+
+    .badge-pinned {
+      background-color: #FEF3C7;
+      color: #92400E;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-wrapper">
+    <!-- Top Bar -->
+    <header class="admin-topbar">
+      <div class="brand-group">
+        <a href="index.html" class="brand-title">You<span>Buddy</span></a>
+        <span class="admin-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Admin Console
+        </span>
+      </div>
+      <div class="nav-links-right">
+        <a href="index.html" class="btn-link-student">← Open Student App</a>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="admin-main">
+      <!-- Tabs Navigation -->
+      <nav class="admin-tabs-nav">
+        <button class="tab-btn active" data-tab="create-post">Create Feed Post</button>
+        <button class="tab-btn" data-tab="manage-posts">Manage Posts</button>
+        <button class="tab-btn" data-tab="manage-curriculum">Curriculum & Notes</button>
+        <button class="tab-btn" data-tab="db-config">Database Config</button>
+      </nav>
+
+      <!-- TAB 1: CREATE POST -->
+      <section id="tab-create-post">
+        <div class="admin-card">
+          <h2 class="card-heading">1. Choose Post Type</h2>
+          <div class="type-grid">
+            <div class="type-pill" data-type="pinned_announcement">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+              <span>Pinned Announcement</span>
+            </div>
+            <div class="type-pill active" data-type="study_tip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+              <span>Study Tip</span>
+            </div>
+            <div class="type-pill" data-type="youtube_video">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>YouTube Video</span>
+            </div>
+            <div class="type-pill" data-type="mcq">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>MCQ Challenge</span>
+            </div>
+            <div class="type-pill" data-type="image">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span>Image Post</span>
+            </div>
+            <div class="type-pill" data-type="video_link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              <span>Video Link</span>
+            </div>
+          </div>
+
+          <h2 class="card-heading">2. Post Details</h2>
+          <form id="post-creation-form">
+            <div class="form-group">
+              <label class="form-label" for="post-title">Post Title</label>
+              <input type="text" class="form-control" id="post-title" required placeholder="e.g. Engineering Mathematics Linear Algebra Revision"/>
+            </div>
+
+            <!-- YouTube URL & Auto-Fetch -->
+            <div class="form-group hidden" id="yt-group">
+              <label class="form-label" for="yt-url">YouTube Video URL</label>
+              <div class="yt-fetch-row">
+                <input type="url" class="form-control" id="yt-url" placeholder="https://www.youtube.com/watch?v=... or youtu.be/..."/>
+                <button type="button" class="btn btn-secondary" id="btn-fetch-yt">Fetch Info</button>
+              </div>
+              <div id="yt-preview-card" class="preview-box hidden">
+                <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-color); margin-bottom: 6px;">
+                  Live Preview with Custom Accent Play Overlay:
+                </div>
+                <div class="video-thumb-container">
+                  <img id="yt-thumb-img" src="" alt="Thumbnail Preview"/>
+                  <div class="custom-play-badge">
+                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MCQ Builder -->
+            <div class="form-group hidden" id="mcq-group">
+              <label class="form-label">Answer Options (Select the radio button for the CORRECT option)</label>
+              <div class="mcq-builder-row">
+                <input type="radio" name="mcq-correct" value="A" class="mcq-radio" checked/>
+                <input type="text" class="form-control" id="mcq-text-A" placeholder="Option A text..."/>
+              </div>
+              <div class="mcq-builder-row">
+                <input type="radio" name="mcq-correct" value="B" class="mcq-radio"/>
+                <input type="text" class="form-control" id="mcq-text-B" placeholder="Option B text..."/>
+              </div>
+              <div class="mcq-builder-row">
+                <input type="radio" name="mcq-correct" value="C" class="mcq-radio"/>
+                <input type="text" class="form-control" id="mcq-text-C" placeholder="Option C text..."/>
+              </div>
+              <div class="mcq-builder-row">
+                <input type="radio" name="mcq-correct" value="D" class="mcq-radio"/>
+                <input type="text" class="form-control" id="mcq-text-D" placeholder="Option D text..."/>
+              </div>
+              <div class="form-group" style="margin-top: 12px;">
+                <label class="form-label" for="mcq-explanation">Explanation / Solution</label>
+                <textarea class="form-control" id="mcq-explanation" rows="2" placeholder="Step-by-step reasoning shown after answering..."></textarea>
+              </div>
+            </div>
+
+            <!-- Image / Media URL -->
+            <div class="form-group hidden" id="media-url-group">
+              <label class="form-label" for="post-media-url">Image / Video URL</label>
+              <input type="url" class="form-control" id="post-media-url" placeholder="https://..."/>
+            </div>
+
+            <!-- Post Content Body -->
+            <div class="form-group">
+              <label class="form-label" for="post-body">Content / Description</label>
+              <textarea class="form-control" id="post-body" rows="4" placeholder="Write full text / explanation..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" style="margin-top: 20px;">
+              Publish Post to Live Feed
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- TAB 2: MANAGE POSTS -->
+      <section id="tab-manage-posts" class="hidden">
+        <div class="admin-card">
+          <h2 class="card-heading">Published Feed Posts</h2>
+          <div class="items-table" id="posts-table-body">
+            <!-- Dynamic rows -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: CURRICULUM & NOTES -->
+      <section id="tab-manage-curriculum" class="hidden">
+        <!-- Add Subject -->
+        <div class="admin-card">
+          <h2 class="card-heading">Add Subject to Curriculum</h2>
+          <form id="add-subject-form">
+            <div class="form-group">
+              <label class="form-label">University & Year</label>
+              <select class="form-control" id="subject-year-select" required>
+                <option value="year-dbatu-1">DBATU — First Year</option>
+                <option value="year-dbatu-2">DBATU — Second Year</option>
+                <option value="year-solapur-1">PAHSU — First Year</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject Name</label>
+              <input type="text" class="form-control" id="subject-name-input" placeholder="e.g. Engineering Mathematics" required/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject Code</label>
+              <input type="text" class="form-control" id="subject-code-input" placeholder="e.g. 24AF1000BS101"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Group (For First Year Common subjects)</label>
+              <select class="form-control" id="subject-group-select">
+                <option value="">None / Common</option>
+                <option value="Group A">Group A</option>
+                <option value="Group B">Group B</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Add Subject</button>
+          </form>
+        </div>
+
+        <!-- Add Topic PDF -->
+        <div class="admin-card">
+          <h2 class="card-heading">Add Topic Unit & PDF Note Link</h2>
+          <form id="add-topic-form">
+            <div class="form-group">
+              <label class="form-label">Target Subject</label>
+              <select class="form-control" id="topic-subject-select" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Topic / Unit Title</label>
+              <input type="text" class="form-control" id="topic-title-input" placeholder="e.g. Unit 1: Matrices and Determinants" required/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">PDF URL (Supabase Storage or Web URL)</label>
+              <input type="url" class="form-control" id="topic-pdf-input" value="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" required/>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Attach Topic & PDF Note</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- TAB 4: DATABASE CONFIG -->
+      <section id="tab-db-config" class="hidden">
+        <div class="admin-card">
+          <h2 class="card-heading">Supabase Connection Settings</h2>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px;">
+            Configure your live Supabase credentials. If left blank, the app will run locally with full browser persistence.
+          </p>
+          <div class="form-group">
+            <label class="form-label" for="cfg-supabase-url">Supabase Project URL</label>
+            <input type="url" class="form-control" id="cfg-supabase-url" placeholder="https://xxxx.supabase.co"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cfg-supabase-key">Supabase Anon Key</label>
+            <input type="text" class="form-control" id="cfg-supabase-key" placeholder="eyJhbGciOi..."/>
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-save-db-config">Save Credentials</button>
+          <button type="button" class="btn btn-secondary" id="btn-reset-seed-data" style="margin-left: 10px;">Reset Default Seed Data</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // ========================================================================
+    // Standalone Admin Logic & Local Database Sync
+    // ========================================================================
+    const DB_KEY = 'youbuddy_db_v1';
+    let currentPostType = 'study_tip';
+    let fetchedYouTubeInfo = null;
+    let supabaseAdminClient = null;
+
+    function getDb() {
+      try {
+        return JSON.parse(localStorage.getItem(DB_KEY)) || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveDb(db) {
+      localStorage.setItem(DB_KEY, JSON.stringify(db));
+    }
+
+    // Initialize Supabase Admin Client from localStorage
+    function initAdminSupabase() {
+      const url = localStorage.getItem('youbuddy_supabase_url') || 'https://nstbirdzdcbspiccbslz.supabase.co';
+      const key = localStorage.getItem('youbuddy_supabase_anon_key') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zdGJpcmR6ZGNic3BpY2Nic2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNjI2NzEsImV4cCI6MjEwMzkzODY3MX0.jOdrAkIlbtxUKQhoXczU4wD5Ht3CFBCY0Blqbv55tIo';
+      
+      const urlInput = document.getElementById('cfg-supabase-url');
+      const keyInput = document.getElementById('cfg-supabase-key');
+      if (urlInput) urlInput.value = url;
+      if (keyInput) keyInput.value = key;
+
+      if (window.supabase && url && key && !url.includes('your-supabase-project')) {
+        try {
+          supabaseAdminClient = window.supabase.createClient(url, key);
+          console.log('[Admin Supabase] Connected to live backend:', url);
+        } catch (err) {
+          console.warn('[Admin Supabase] Client init error:', err);
+        }
+      }
+    }
+    initAdminSupabase();
+
+    // Tab Switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const tab = btn.getAttribute('data-tab');
+        document.getElementById('tab-create-post').classList.toggle('hidden', tab !== 'create-post');
+        document.getElementById('tab-manage-posts').classList.toggle('hidden', tab !== 'manage-posts');
+        document.getElementById('tab-manage-curriculum').classList.toggle('hidden', tab !== 'manage-curriculum');
+        document.getElementById('tab-db-config').classList.toggle('hidden', tab !== 'db-config');
+
+        if (tab === 'manage-posts') renderPostsList();
+        if (tab === 'manage-curriculum') populateSubjectSelect();
+      });
+    });
+
+    // Auto-switch to db-config tab if requested via URL hash
+    if (window.location.hash === '#tab-db-config') {
+      const dbTabBtn = document.querySelector('.tab-btn[data-tab="db-config"]');
+      if (dbTabBtn) dbTabBtn.click();
+    }
+
+    // Post Type Selector
+    document.querySelectorAll('.type-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentPostType = pill.getAttribute('data-type');
+
+        // Toggle Form Groups
+        document.getElementById('yt-group').classList.toggle('hidden', currentPostType !== 'youtube_video');
+        document.getElementById('mcq-group').classList.toggle('hidden', currentPostType !== 'mcq');
+        document.getElementById('media-url-group').classList.toggle('hidden', currentPostType !== 'image' && currentPostType !== 'video_link');
+      });
+    });
+
+    // YouTube Auto-Fetch Info
+    document.getElementById('btn-fetch-yt').addEventListener('click', async () => {
+      const url = document.getElementById('yt-url').value;
+      const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
+      const videoId = (match && match[2].length === 11) ? match[2] : null;
+
+      if (!videoId) {
+        alert('Please enter a valid YouTube video link.');
+        return;
+      }
+
+      const fetchBtn = document.getElementById('btn-fetch-yt');
+      fetchBtn.disabled = true;
+      fetchBtn.textContent = 'Fetching...';
+
+      let title = 'YouTube Video';
+      try {
+        const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.title) title = data.title;
+        }
+      } catch (e) {
+        console.warn('Could not auto-pull title:', e);
+      }
+
+      fetchedYouTubeInfo = {
+        videoId,
+        title,
+        thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        fallbackThumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+      };
+
+      if (!document.getElementById('post-title').value) {
+        document.getElementById('post-title').value = title;
+      }
+
+      const previewBox = document.getElementById('yt-preview-card');
+      const thumbImg = document.getElementById('yt-thumb-img');
+      thumbImg.src = fetchedYouTubeInfo.thumbnail;
+      thumbImg.onerror = () => { thumbImg.src = fetchedYouTubeInfo.fallbackThumbnail; };
+      previewBox.classList.remove('hidden');
+
+      fetchBtn.disabled = false;
+      fetchBtn.textContent = 'Fetch Info';
+    });
+
+    // Post Submit Handler
+    document.getElementById('post-creation-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('post-title').value;
+      const content = document.getElementById('post-body').value;
+      let mediaUrl = null;
+      let thumbnail_url = null;
+      let extraData = {};
+      let options = [];
+
+      if (currentPostType === 'youtube_video') {
+        mediaUrl = document.getElementById('yt-url').value;
+        const videoId = fetchedYouTubeInfo ? fetchedYouTubeInfo.videoId : (mediaUrl.match(/v=([^&]+)/)?.[1] || '');
+        extraData.youtube_video_id = videoId;
+        thumbnail_url = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      } else if (currentPostType === 'image' || currentPostType === 'video_link') {
+        mediaUrl = document.getElementById('post-media-url').value;
+        thumbnail_url = mediaUrl;
+      } else if (currentPostType === 'mcq') {
+        const correctLetter = document.querySelector('input[name="mcq-correct"]:checked').value;
+        const explanation = document.getElementById('mcq-explanation').value;
+        options = ['A', 'B', 'C', 'D'].map(letter => ({
+          id: 'opt-' + Date.now() + '-' + letter,
+          option_letter: letter,
+          option_text: document.getElementById(`mcq-text-${letter}`).value || `Option ${letter}`,
+          is_correct: letter === correctLetter,
+          explanation: explanation
+        }));
+      }
+
+      const newPost = {
+        id: 'post-' + Date.now(),
+        type: currentPostType,
+        is_pinned: currentPostType === 'pinned_announcement',
+        title: title,
+        content: content,
+        media_url: mediaUrl,
+        thumbnail_url: thumbnail_url,
+        extra_data: extraData,
+        options: options,
+        is_published: true,
+        created_at: new Date().toISOString(),
+        author_name: 'YouBuddy Admin'
+      };
+
+      const db = getDb();
+      if (!db.posts) db.posts = [];
+      db.posts.unshift(newPost);
+
+      if (currentPostType === 'mcq' && options.length > 0) {
+        if (!db.mcq_options) db.mcq_options = [];
+        options.forEach(opt => {
+          db.mcq_options.push({ ...opt, post_id: newPost.id });
+        });
+      }
+
+      saveDb(db);
+
+      // If Supabase is connected, insert directly into live backend
+      if (supabaseAdminClient) {
+        supabaseAdminClient.from('posts').insert({
+          type: currentPostType,
+          is_pinned: currentPostType === 'pinned_announcement',
+          title: title,
+          content: content,
+          media_url: mediaUrl,
+          thumbnail_url: thumbnail_url,
+          extra_data: extraData,
+          is_published: true,
+          author_name: 'YouBuddy Admin'
+        }).select().single().then(async ({ data: insertedPost, error: postErr }) => {
+          if (postErr) {
+            console.error('[Supabase post insert error]:', postErr);
+            alert(`Notice: Post saved locally, but Supabase insert returned: ${postErr.message}`);
+          } else if (insertedPost && currentPostType === 'mcq' && options.length > 0) {
+            const formattedOptions = options.map((opt, idx) => ({
+              post_id: insertedPost.id,
+              option_letter: opt.option_letter,
+              option_text: opt.option_text,
+              is_correct: opt.is_correct,
+              explanation: opt.explanation,
+              display_order: idx + 1
+            }));
+            await supabaseAdminClient.from('mcq_options').insert(formattedOptions);
+          }
+        });
+      }
+
+      alert('Post successfully published!');
+      document.getElementById('post-creation-form').reset();
+      document.getElementById('yt-preview-card').classList.add('hidden');
+      fetchedYouTubeInfo = null;
+    });
+
+    // Render Posts Table in Manage Posts Tab (From Supabase or Local)
+    async function renderPostsList() {
+      const listEl = document.getElementById('posts-table-body');
+      let posts = [];
+
+      if (supabaseAdminClient) {
+        listEl.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 24px;">Loading posts from Supabase...</p>';
+        try {
+          const { data, error } = await supabaseAdminClient
+            .from('posts')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (!error && data) posts = data;
+        } catch (e) {
+          console.warn('[Admin] Failed to load from Supabase:', e);
+        }
+      }
+
+      if (posts.length === 0) {
+        const db = getDb();
+        posts = db.posts || [];
+      }
+
+      if (posts.length === 0) {
+        listEl.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 24px;">No posts published yet.</p>';
+        return;
+      }
+
+      listEl.innerHTML = posts.map(p => `
+        <div class="item-row">
+          <div>
+            <div class="item-title">${escapeHtml(p.title)}</div>
+            <div class="item-subtitle">
+              <span class="badge-pill badge-navy">${p.type}</span>
+              ${p.is_pinned ? '<span class="badge-pill badge-pinned">PINNED</span>' : ''}
+              <span>${new Date(p.created_at).toLocaleDateString()}</span>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-danger" onclick="deletePost('${p.id}')">Delete</button>
+        </div>
+      `).join('');
+    }
+
+    window.deletePost = async function(postId) {
+      if (confirm('Delete this post permanently?')) {
+        if (supabaseAdminClient) {
+          await supabaseAdminClient.from('posts').delete().eq('id', postId);
+        }
+        const db = getDb();
+        db.posts = (db.posts || []).filter(p => p.id !== postId);
+        saveDb(db);
+        renderPostsList();
+      }
+    };
+
+    // Database Configuration Tab Handlers
+    document.getElementById('btn-save-db-config').addEventListener('click', async () => {
+      const url = document.getElementById('cfg-supabase-url').value.trim();
+      const key = document.getElementById('cfg-supabase-key').value.trim();
+
+      if (!url || !key) {
+        alert('Please enter both your Supabase Project URL and Anon Key.');
+        return;
+      }
+
+      localStorage.setItem('youbuddy_supabase_url', url);
+      localStorage.setItem('youbuddy_supabase_anon_key', key);
+
+      const saveBtn = document.getElementById('btn-save-db-config');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Verifying connection...';
+
+      try {
+        const testClient = window.supabase.createClient(url, key);
+        const { data, error } = await testClient.from('posts').select('id').limit(1);
+
+        if (error) {
+          alert(`Credentials saved! Note from Supabase: "${error.message}"\nMake sure your migrations (20260820000001_initial_schema.sql and 20260820000002_seed_dummy_data.sql) have been run in your Supabase SQL Editor.`);
+        } else {
+          alert('Supabase successfully connected and verified! Your feed will now fetch live data.');
+        }
+        supabaseAdminClient = testClient;
+      } catch (err) {
+        alert('Credentials saved to localStorage.');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Credentials';
+      }
+    });
+
+    document.getElementById('btn-reset-seed-data').addEventListener('click', () => {
+      if (confirm('Reset local cache and clear stored post views?')) {
+        const db = getDb();
+        db.posts = [];
+        db.post_views = {};
+        db.mcq_responses = {};
+        saveDb(db);
+        alert('Local cache reset successfully!');
+        renderPostsList();
+      }
+    });
+
+    // Populate Subjects Select
+    function populateSubjectSelect() {
+      const db = getDb();
+      const subjects = db.subjects || [];
+      const select = document.getElementById('topic-subject-select');
+      select.innerHTML = subjects.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+    }
+
+    // Add Subject Handler
+    document.getElementById('add-subject-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const yearId = document.getElementById('subject-year-select').value;
+      const name = document.getElementById('subject-name-input').value;
+      const code = document.getElementById('subject-code-input').value;
+      const group = document.getElementById('subject-group-select').value;
+
+      const db = getDb();
+      if (!db.subjects) db.subjects = [];
+      db.subjects.push({
+        id: 'sub-' + Date.now(),
+        year_id: yearId,
+        stream_id: null,
+        name: name,
+        code: code,
+        group_name: group || null,
+        units_count: 5
+      });
+      saveDb(db);
+      alert(`Subject "${name}" added successfully!`);
+      document.getElementById('add-subject-form').reset();
+      populateSubjectSelect();
+    });
+
+    // Add Topic PDF Handler
+    document.getElementById('add-topic-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const subjectId = document.getElementById('topic-subject-select').value;
+      const title = document.getElementById('topic-title-input').value;
+      const pdfUrl = document.getElementById('topic-pdf-input').value;
+
+      const db = getDb();
+      if (!db.topics) db.topics = [];
+      db.topics.push({
+        id: 'top-' + Date.now(),
+        subject_id: subjectId,
+        title: title,
+        pdf_url: pdfUrl,
+        file_size_bytes: 2600000,
+        page_count: 32
+      });
+      saveDb(db);
+      alert(`Topic "${title}" with PDF attached!`);
+      document.getElementById('add-topic-form').reset();
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="description" content="YouBuddy — Engineering Notes & Syllabus Hub" />
+  <meta name="theme-color" content="#0B3D91" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <title>YouBuddy — Notes & Syllabus</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+
+  <style>
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8FAFC;
+      --accent-color: #0B3D91;
+      --accent-hover: #082C6A;
+      --accent-light: #EBF1FA;
+      --accent-border: #D0DFF2;
+      --text-primary: #000000;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --text-inverse: #FFFFFF;
+      --border-subtle: #EDF2F7;
+      --border-medium: #E2E8F0;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --topbar-height: 56px;
+      --bottomnav-height: 62px;
+      --app-max-width: 680px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #F8FAFC;
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      line-height: 1.5;
+    }
+
+    #app-container {
+      max-width: var(--app-max-width);
+      margin: 0 auto;
+      background-color: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    /* Top Bar */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--app-max-width);
+      height: var(--topbar-height);
+      background-color: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .brand-title span { color: var(--accent-color); }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+    }
+
+    .avatar-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+      border: 1.5px solid var(--accent-border);
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    /* Main Container */
+    .notes-main {
+      flex: 1;
+      padding-top: calc(var(--topbar-height) + 16px);
+      padding-bottom: calc(var(--bottomnav-height) + 24px);
+      padding-left: 16px;
+      padding-right: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Active Academic Context Bar */
+    .context-card {
+      background-color: var(--accent-light);
+      border: 1px solid var(--accent-border);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .context-uni-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      text-transform: uppercase;
+    }
+
+    .context-details {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 2px;
+    }
+
+    .btn-change {
+      background: #FFFFFF;
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+      border-radius: var(--radius-full);
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Group Tabs */
+    .group-tabs {
+      display: flex;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .group-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      background: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+    }
+
+    .group-btn.active {
+      background: #FFFFFF;
+      color: var(--accent-color);
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Subjects List */
+    .subject-row {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+
+    .subject-row:hover {
+      border-color: var(--accent-color);
+      background-color: var(--accent-light);
+    }
+
+    .subject-title {
+      font-weight: 700;
+      font-size: 0.98rem;
+    }
+
+    .subject-code {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* Topics List */
+    .topic-row {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .topic-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .btn-pdf {
+      background: var(--accent-light);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-pdf:hover {
+      background: var(--accent-color);
+      color: #FFFFFF;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--app-max-width);
+      height: var(--bottomnav-height);
+      background-color: var(--bg-primary);
+      border-top: 1px solid var(--border-subtle);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      z-index: 100;
+    }
+
+    .bottom-nav-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 4px 0;
+      position: relative;
+    }
+
+    .bottom-nav-link.active {
+      color: var(--accent-color);
+      font-weight: 700;
+    }
+
+    .bottom-nav-link.active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 28px;
+      height: 3px;
+      background: var(--accent-color);
+      border-radius: 0 0 3px 3px;
+    }
+
+    .bottom-nav-link svg { width: 22px; height: 22px; }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 300;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    @media (min-width: 680px) {
+      .modal-backdrop { align-items: center; }
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-dialog {
+      width: 100%;
+      max-width: var(--app-max-width);
+      max-height: 90vh;
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @media (min-width: 680px) {
+      .modal-dialog { border-radius: var(--radius-lg); }
+    }
+
+    .pdf-modal-dialog {
+      max-width: 900px;
+      height: 92vh;
+    }
+
+    .modal-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <a href="index.html" class="icon-btn" aria-label="Back">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <a href="index.html" class="brand-title">You<span>Buddy</span></a>
+      <a href="profile.html" class="avatar-btn" id="top-avatar-btn">E</a>
+    </header>
+
+    <!-- Main Notes Content -->
+    <main class="notes-main">
+      <!-- Active Context Bar -->
+      <div class="context-card">
+        <div>
+          <div class="context-uni-tag" id="ctx-uni-code">DBATU</div>
+          <div class="context-details" id="ctx-desc">First Year • All Streams</div>
+        </div>
+        <button class="btn-change" id="btn-change-context">Change</button>
+      </div>
+
+      <!-- Group Tabs for First Year -->
+      <div class="group-tabs" id="group-tabs-container">
+        <button class="group-btn active" data-grp="Group A">Group A</button>
+        <button class="group-btn" data-grp="Group B">Group B</button>
+      </div>
+
+      <!-- Subjects & Topics Area -->
+      <div id="notes-content-view">
+        <!-- Injected via JavaScript -->
+      </div>
+    </main>
+
+    <!-- Bottom Navigation Bar (4 Items) -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="notes.html" class="bottom-nav-link active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+        <span>Notes</span>
+      </a>
+      <a href="courses.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <span>Courses</span>
+      </a>
+      <a href="games.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4m7-2h.01m3-2h.01"/></svg>
+        <span>Games</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- PDF Viewer Modal -->
+  <div class="modal-backdrop" id="pdf-modal">
+    <div class="modal-dialog pdf-modal-dialog">
+      <div class="modal-header">
+        <div>
+          <div style="font-weight:700; font-size:1rem;" id="pdf-title-text">Unit Notes</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);" id="pdf-sub-text">Syllabus PDF</div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a href="#" id="pdf-download-link" target="_blank" download style="padding:6px 12px; background:var(--bg-secondary); border:1px solid var(--border-medium); border-radius:6px; text-decoration:none; color:var(--text-primary); font-size:0.8rem; font-weight:600;">Download</a>
+          <button class="icon-btn" id="close-pdf-modal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div style="flex:1; background:#525659;">
+        <iframe id="pdf-frame" src="" style="width:100%; height:100%; border:none;"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========================================================================
+    // Self-Contained Notes View Logic
+    // ========================================================================
+    const DB_KEY = 'youbuddy_db_v1';
+    let currentGroup = 'Group A';
+    let currentSubject = null;
+
+    function getDb() {
+      try {
+        return JSON.parse(localStorage.getItem(DB_KEY)) || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function renderNotes() {
+      const db = getDb();
+      const user = db.profile || { full_name: 'E' };
+      document.getElementById('top-avatar-btn').textContent = (user.full_name || 'E')[0].toUpperCase();
+
+      const yearId = user.selected_year_id || 'year-dbatu-1';
+      const allSubjects = db.subjects || [];
+      const subjects = allSubjects.filter(s => s.year_id === yearId);
+
+      const hasGroups = subjects.some(s => s.group_name);
+      document.getElementById('group-tabs-container').style.display = hasGroups ? 'flex' : 'none';
+
+      let filtered = subjects;
+      if (hasGroups) {
+        filtered = subjects.filter(s => s.group_name === currentGroup || !s.group_name);
+      }
+
+      const container = document.getElementById('notes-content-view');
+      if (filtered.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:40px; color:var(--text-muted);">No subjects found for this selection.</p>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="font-weight:700; font-size:1rem; margin-bottom:12px;">Curriculum Subjects (${filtered.length})</div>
+        ${filtered.map(s => `
+          <div class="subject-row" onclick="viewSubjectTopics('${s.id}')">
+            <div>
+              <div class="subject-title">${escapeHtml(s.name)}</div>
+              <div class="subject-code">${s.code ? 'Code: ' + escapeHtml(s.code) + ' • ' : ''}${s.units_count || 5} Units</div>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    window.viewSubjectTopics = function(subjectId) {
+      const db = getDb();
+      const subjects = db.subjects || [];
+      const subject = subjects.find(s => s.id === subjectId);
+      if (!subject) return;
+
+      const topics = (db.topics || []).filter(t => t.subject_id === subjectId);
+      const container = document.getElementById('notes-content-view');
+
+      container.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
+          <button class="icon-btn" onclick="renderNotes()" style="color:var(--accent-color);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div>
+            <div style="font-weight:700; font-size:1.1rem;">${escapeHtml(subject.name)}</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">${subject.code || 'Syllabus Topics'}</div>
+          </div>
+        </div>
+        ${topics.length > 0 ? topics.map(t => `
+          <div class="topic-row">
+            <div>
+              <div class="topic-title">${escapeHtml(t.title)}</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">${t.page_count ? t.page_count + ' Pages • ' : ''}PDF Note</div>
+            </div>
+            <button class="btn-pdf" onclick="openPDF('${t.pdf_url}', '${escapeHtml(t.title)}', '${escapeHtml(subject.name)}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              View PDF
+            </button>
+          </div>
+        `).join('') : '<p style="text-align:center; padding:40px; color:var(--text-muted);">No topic notes uploaded yet.</p>'}
+      `;
+    };
+
+    // Group Tab Switcher
+    document.querySelectorAll('.group-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.group-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentGroup = btn.getAttribute('data-grp');
+        renderNotes();
+      });
+    });
+
+    // PDF Modal
+    const pdfModal = document.getElementById('pdf-modal');
+    window.openPDF = function(url, title, subjectName) {
+      document.getElementById('pdf-title-text').textContent = title;
+      document.getElementById('pdf-sub-text').textContent = subjectName;
+      document.getElementById('pdf-download-link').href = url;
+      document.getElementById('pdf-frame').src = url;
+      pdfModal.classList.add('open');
+    };
+
+    document.getElementById('close-pdf-modal').addEventListener('click', () => {
+      pdfModal.classList.remove('open');
+      document.getElementById('pdf-frame').src = '';
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    renderNotes();
+  </script>
+</body>
+</html>

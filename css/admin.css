@@ -1,0 +1,203 @@
+/* ============================================================================
+   YouBuddy — Admin Panel Styles
+   ============================================================================ */
+
+.admin-container {
+  padding: var(--space-3) var(--space-4) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-medium);
+  padding-bottom: var(--space-3);
+}
+
+.admin-badge {
+  background-color: var(--accent-color);
+  color: var(--text-inverse);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Admin Tabs */
+.admin-tabs {
+  display: flex;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 4px;
+  overflow-x: auto;
+}
+
+.admin-tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: none;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.admin-tab-btn.active {
+  background-color: var(--bg-primary);
+  color: var(--accent-color);
+  font-weight: 700;
+  box-shadow: var(--shadow-subtle);
+}
+
+/* Admin Card Container */
+.admin-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+
+.admin-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+
+/* Post Type Select Grid */
+.post-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 480px) {
+  .post-type-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.post-type-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-3) var(--space-2);
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.post-type-choice.active {
+  border-color: var(--accent-color);
+  background-color: var(--accent-light);
+  color: var(--accent-color);
+}
+
+/* YouTube URL Auto-Fetch Section */
+.url-fetch-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.url-fetch-row input {
+  flex: 1;
+}
+
+.live-preview-box {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border: 1px dashed var(--accent-border);
+  border-radius: var(--radius-md);
+  background-color: var(--accent-light);
+}
+
+.live-preview-label {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+}
+
+/* MCQ Creator Form */
+.mcq-admin-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.mcq-admin-option-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.mcq-radio-correct {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-success);
+  cursor: pointer;
+}
+
+/* Admin Item Tables / Lists */
+.admin-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.admin-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+}
+
+.admin-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-item-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.admin-item-subtitle {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.admin-item-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}

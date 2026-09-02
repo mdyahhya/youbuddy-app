@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="description" content="YouBuddy — Engineering Courses" />
+  <meta name="theme-color" content="#0B3D91" />
+
+  <title>YouBuddy — Courses</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+
+  <style>
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8FAFC;
+      --accent-color: #0B3D91;
+      --accent-light: #EBF1FA;
+      --accent-border: #D0DFF2;
+      --text-primary: #000000;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --border-subtle: #EDF2F7;
+      --topbar-height: 56px;
+      --bottomnav-height: 62px;
+      --app-max-width: 680px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #F8FAFC;
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      line-height: 1.5;
+    }
+
+    #app-container {
+      max-width: var(--app-max-width);
+      margin: 0 auto;
+      background-color: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    /* Top Bar */
+    .top-bar {
+      position: fixed;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--app-max-width);
+      height: var(--topbar-height);
+      background-color: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .brand-title span { color: var(--accent-color); }
+
+    .avatar-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+      border: 1.5px solid var(--accent-border);
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .icon-btn {
+      background: none; border: none; cursor: pointer; padding: 8px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .placeholder-main {
+      flex: 1;
+      padding-top: var(--topbar-height);
+      padding-bottom: var(--bottomnav-height);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+    .icon-badge {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--app-max-width);
+      height: var(--bottomnav-height);
+      background-color: var(--bg-primary);
+      border-top: 1px solid var(--border-subtle);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      z-index: 100;
+    }
+
+    .bottom-nav-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 4px 0;
+      position: relative;
+    }
+
+    .bottom-nav-link.active {
+      color: var(--accent-color);
+      font-weight: 700;
+    }
+
+    .bottom-nav-link.active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 28px;
+      height: 3px;
+      background: var(--accent-color);
+      border-radius: 0 0 3px 3px;
+    }
+
+    .bottom-nav-link svg { width: 22px; height: 22px; }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <header class="top-bar">
+      <a href="index.html" class="icon-btn" aria-label="Back">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <a href="index.html" class="brand-title">You<span>Buddy</span></a>
+      <a href="profile.html" class="avatar-btn" id="top-avatar-btn">E</a>
+    </header>
+
+    <main class="placeholder-main">
+      <div class="icon-badge">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
+      <h1 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 8px;">Courses & Video Modules</h1>
+      <p style="font-size: 0.95rem; color: var(--text-secondary); max-width: 360px; line-height: 1.6; margin-bottom: 20px;">
+        Structured semester roadmaps, video crash courses, and lab walkthroughs are coming soon.
+      </p>
+      <span style="padding: 4px 12px; background: var(--accent-light); color: var(--accent-color); border: 1px solid var(--accent-border); border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
+        Coming Soon
+      </span>
+    </main>
+
+    <nav class="bottom-nav">
+      <a href="index.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="notes.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Notes</span>
+      </a>
+      <a href="courses.html" class="bottom-nav-link active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+        <span>Courses</span>
+      </a>
+      <a href="games.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4m7-2h.01m3-2h.01"/></svg>
+        <span>Games</span>
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    const db = JSON.parse(localStorage.getItem('youbuddy_db_v1')) || {};
+    const user = db.profile || { full_name: 'E' };
+    document.getElementById('top-avatar-btn').textContent = (user.full_name || 'E')[0].toUpperCase();
+  </script>
+</body>
+</html>

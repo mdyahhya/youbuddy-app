@@ -1,0 +1,19 @@
+{
+  "name": "YouBuddy — Engineering Student App",
+  "short_name": "YouBuddy",
+  "description": "All-in-One Engineering Student Platform: Notes, Curriculum, Feed & Knowledge Hub",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0B3D91",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

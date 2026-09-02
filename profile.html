@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="description" content="YouBuddy — Student Profile" />
+  <meta name="theme-color" content="#0B3D91" />
+
+  <title>YouBuddy — Student Profile</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+
+  <style>
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8FAFC;
+      --accent-color: #0B3D91;
+      --accent-hover: #082C6A;
+      --accent-light: #EBF1FA;
+      --accent-border: #D0DFF2;
+      --text-primary: #000000;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --text-inverse: #FFFFFF;
+      --border-subtle: #EDF2F7;
+      --border-medium: #E2E8F0;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-card: 0 2px 8px rgba(11, 61, 145, 0.06);
+      --topbar-height: 56px;
+      --bottomnav-height: 62px;
+      --app-max-width: 680px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #F8FAFC;
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      line-height: 1.5;
+    }
+
+    #app-container {
+      max-width: var(--app-max-width);
+      margin: 0 auto;
+      background-color: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    /* Top Bar */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--app-max-width);
+      height: var(--topbar-height);
+      background-color: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .brand-title span { color: var(--accent-color); }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    /* Profile Main Container */
+    .profile-main {
+      flex: 1;
+      padding-top: var(--topbar-height);
+      padding-bottom: calc(var(--bottomnav-height) + 30px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Cover Hero Banner */
+    .cover-banner {
+      height: 120px;
+      background: linear-gradient(135deg, #0B3D91 0%, #062254 100%);
+    }
+
+    /* Main Info Card */
+    .profile-info-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-lg);
+      margin: -50px 16px 0;
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .avatar-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .avatar-large {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-full);
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+      border: 3.5px solid #FFFFFF;
+      font-size: 2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-edit {
+      border: 1.5px solid var(--accent-color);
+      color: var(--accent-color);
+      background: none;
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .profile-headline {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .profile-bio {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* Academic Credentials Card */
+    .profile-section-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-lg);
+      margin: 0 16px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cred-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .cred-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-md);
+      background: var(--accent-light);
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cred-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .cred-val {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 0 16px;
+    }
+
+    .stat-pill {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--accent-color);
+    }
+
+    .stat-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--app-max-width);
+      height: var(--bottomnav-height);
+      background-color: var(--bg-primary);
+      border-top: 1px solid var(--border-subtle);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      z-index: 100;
+    }
+
+    .bottom-nav-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 4px 0;
+    }
+
+    .bottom-nav-link svg { width: 22px; height: 22px; }
+
+    /* Edit Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 300;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    @media (min-width: 680px) { .modal-backdrop { align-items: center; } }
+    .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+
+    .modal-dialog {
+      width: 100%;
+      max-width: var(--app-max-width);
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @media (min-width: 680px) { .modal-dialog { border-radius: var(--radius-lg); } }
+
+    .modal-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body { padding: 16px; }
+
+    .form-group {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label { font-size: 0.85rem; font-weight: 600; }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent-color);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <a href="index.html" class="icon-btn" aria-label="Back">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <a href="index.html" class="brand-title">You<span>Buddy</span></a>
+      <div style="width: 36px;"></div>
+    </header>
+
+    <!-- Profile View -->
+    <main class="profile-main">
+      <div class="cover-banner"></div>
+
+      <!-- Main Profile Info -->
+      <div class="profile-info-card">
+        <div class="avatar-row">
+          <div class="avatar-large" id="prof-avatar-large">E</div>
+          <button class="btn-edit" id="btn-open-edit">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Edit Profile
+          </button>
+        </div>
+        <h1 class="profile-name" id="prof-name">Engineering Student</h1>
+        <p class="profile-headline" id="prof-headline">B.Tech Computer Science @ DBATU</p>
+        <p class="profile-bio" id="prof-bio">Passionate about software development and engineering concepts.</p>
+      </div>
+
+      <!-- Academic Credentials -->
+      <div class="profile-section-card">
+        <div class="section-heading">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/></svg>
+          Academic Credentials
+        </div>
+        <div class="cred-row">
+          <div class="cred-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/></svg>
+          </div>
+          <div>
+            <div class="cred-label">University</div>
+            <div class="cred-val" id="prof-uni-val">Dr. Babasaheb Ambedkar Technological University (DBATU)</div>
+          </div>
+        </div>
+        <div class="cred-row">
+          <div class="cred-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+          </div>
+          <div>
+            <div class="cred-label">Year</div>
+            <div class="cred-val" id="prof-year-val">First Year</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Stats -->
+      <div class="stats-grid">
+        <div class="stat-pill">
+          <div class="stat-num" id="stat-views-val">0</div>
+          <div class="stat-desc">Feed Views</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-num" id="stat-mcq-val">0</div>
+          <div class="stat-desc">MCQs Solved</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-num" id="stat-notes-val">0</div>
+          <div class="stat-desc">Notes Listed</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation Bar (4 Items) -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="notes.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Notes</span>
+      </a>
+      <a href="courses.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <span>Courses</span>
+      </a>
+      <a href="games.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4m7-2h.01m3-2h.01"/></svg>
+        <span>Games</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-backdrop" id="edit-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Edit Profile</h3>
+        <button class="icon-btn" id="close-edit-modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-form">
+          <div class="form-group">
+            <label class="form-label" for="input-name">Full Name</label>
+            <input type="text" class="form-control" id="input-name" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="input-headline">Headline</label>
+            <input type="text" class="form-control" id="input-headline"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="input-bio">About / Bio</label>
+            <textarea class="form-control" id="input-bio" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn-submit">Save Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DB_KEY = 'youbuddy_db_v1';
+
+    function getDb() {
+      try { return JSON.parse(localStorage.getItem(DB_KEY)) || {}; } catch(e) { return {}; }
+    }
+    function saveDb(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+    function renderProfile() {
+      const db = getDb();
+      const user = db.profile || { full_name: 'Engineering Student' };
+
+      document.getElementById('prof-avatar-large').textContent = (user.full_name || 'E')[0].toUpperCase();
+      document.getElementById('prof-name').textContent = user.full_name || 'Engineering Student';
+      document.getElementById('prof-headline').textContent = user.headline || 'B.Tech Engineering Student';
+      document.getElementById('prof-bio').textContent = user.bio || 'Exploring engineering topics.';
+
+      document.getElementById('stat-views-val').textContent = Object.keys(db.post_views || {}).length;
+      document.getElementById('stat-mcq-val').textContent = Object.keys(db.mcq_responses || {}).length;
+      document.getElementById('stat-notes-val').textContent = (db.topics || []).length;
+    }
+
+    const editModal = document.getElementById('edit-modal');
+    document.getElementById('btn-open-edit').addEventListener('click', () => {
+      const db = getDb();
+      const user = db.profile || {};
+      document.getElementById('input-name').value = user.full_name || '';
+      document.getElementById('input-headline').value = user.headline || '';
+      document.getElementById('input-bio').value = user.bio || '';
+      editModal.classList.add('open');
+    });
+
+    document.getElementById('close-edit-modal').addEventListener('click', () => {
+      editModal.classList.remove('open');
+    });
+
+    document.getElementById('edit-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const db = getDb();
+      if (!db.profile) db.profile = {};
+      db.profile.full_name = document.getElementById('input-name').value;
+      db.profile.headline = document.getElementById('input-headline').value;
+      db.profile.bio = document.getElementById('input-bio').value;
+      saveDb(db);
+      editModal.classList.remove('open');
+      renderProfile();
+    });
+
+    renderProfile();
+  </script>
+</body>
+</html>

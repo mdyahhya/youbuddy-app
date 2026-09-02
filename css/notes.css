@@ -1,0 +1,300 @@
+/* ============================================================================
+   YouBuddy — Notes & Syllabus PDF Browser Styles
+   ============================================================================ */
+
+.notes-container {
+  padding: var(--space-3) var(--space-4) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Active Context Pill Bar */
+.academic-context-card {
+  background-color: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.context-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.context-uni-label {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.context-title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.btn-change-context {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  border-radius: var(--radius-full);
+  padding: 5px 12px;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.btn-change-context:hover {
+  background-color: var(--accent-color);
+  color: var(--text-inverse);
+}
+
+/* Group / Term Switcher (e.g. Group A / Group B) */
+.group-tabs-container {
+  display: flex;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 4px;
+}
+
+.group-tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: none;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.group-tab-btn.active {
+  background-color: var(--bg-primary);
+  color: var(--accent-color);
+  font-weight: 700;
+  box-shadow: var(--shadow-subtle);
+}
+
+/* Subjects List */
+.subjects-section-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subjects-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.subject-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--transition-fast);
+}
+
+.subject-card:hover {
+  border-color: var(--accent-color);
+  background-color: var(--accent-light);
+  transform: translateY(-1px);
+}
+
+.subject-card:active {
+  transform: scale(0.99);
+}
+
+.subject-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.subject-name {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.subject-meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subject-chevron {
+  color: var(--text-light);
+  transition: transform var(--transition-fast);
+}
+
+.subject-card:hover .subject-chevron {
+  color: var(--accent-color);
+  transform: translateX(2px);
+}
+
+/* Topics Drilldown View */
+.topics-view-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.btn-back-subjects {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--accent-color);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+}
+
+.topics-header-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.topic-item-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  transition: all var(--transition-fast);
+}
+
+.topic-item-card:hover {
+  border-color: var(--accent-color);
+}
+
+.topic-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.topic-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.topic-meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-open-pdf {
+  background-color: var(--accent-light);
+  color: var(--accent-color);
+  border: 1px solid var(--accent-border);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.btn-open-pdf:hover {
+  background-color: var(--accent-color);
+  color: var(--text-inverse);
+}
+
+/* PDF Viewer Modal */
+.pdf-viewer-dialog {
+  width: 100%;
+  max-width: 900px;
+  height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-viewer-header {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-primary);
+}
+
+.pdf-header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-header-title {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.pdf-header-subject {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.pdf-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pdf-frame-container {
+  flex: 1;
+  background-color: #525659;
+  position: relative;
+}
+
+.pdf-frame-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}

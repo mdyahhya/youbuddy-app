@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="description" content="YouBuddy — All-in-One Engineering Student Platform" />
+  <meta name="theme-color" content="#0B3D91" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="YouBuddy" />
+
+  <title>YouBuddy — Engineering Student App</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+
+  <!-- Supabase Official JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8FAFC;
+      --bg-hover: #F1F5F9;
+      --accent-color: #0B3D91;
+      --accent-hover: #082C6A;
+      --accent-light: #EBF1FA;
+      --accent-border: #D0DFF2;
+      --text-primary: #000000;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --text-inverse: #FFFFFF;
+      --border-subtle: #EDF2F7;
+      --border-medium: #E2E8F0;
+      --color-success: #15803D;
+      --color-success-bg: #DCFCE7;
+      --color-error: #DC2626;
+      --color-error-bg: #FEE2E2;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-card: 0 2px 8px rgba(11, 61, 145, 0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --topbar-height: 56px;
+      --bottomnav-height: 62px;
+      --app-max-width: 680px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #F8FAFC;
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      line-height: 1.5;
+    }
+
+    #app-container {
+      max-width: var(--app-max-width);
+      margin: 0 auto;
+      background-color: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border-left: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+      box-shadow: 0 0 30px rgba(0,0,0,0.04);
+    }
+
+    /* Top Navigation Bar */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--app-max-width);
+      height: var(--topbar-height);
+      background-color: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 100;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .brand-title span {
+      color: var(--accent-color);
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+    }
+
+    .avatar-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+      border: 1.5px solid var(--accent-border);
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    /* Side Drawer */
+    .drawer-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .side-drawer {
+      position: fixed;
+      top: 0; left: 0;
+      width: 290px;
+      height: 100%;
+      background: var(--bg-primary);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      z-index: 201;
+      transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 20px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .drawer-menu-item:hover {
+      background-color: var(--accent-light);
+      color: var(--accent-color);
+    }
+
+    .drawer-menu-item svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent-color);
+    }
+
+    /* Main Feed Area */
+    .feed-main {
+      flex: 1;
+      padding-top: calc(var(--topbar-height) + 12px);
+      padding-bottom: calc(var(--bottomnav-height) + 24px);
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .feed-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Post Card */
+    .post-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .post-pinned {
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .pinned-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--accent-color);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .study-tip-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: var(--accent-light);
+      color: var(--accent-color);
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .author-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-full);
+      background: var(--accent-light);
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .post-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .post-content {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    /* YouTube Card & Minimal Navy Overlay */
+    .video-preview {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-top: 12px;
+      cursor: pointer;
+    }
+
+    .video-preview img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    .custom-play-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .custom-play-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(11, 61, 145, 0.92);
+      border: 2px solid #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+
+    .video-preview:hover .custom-play-btn {
+      transform: scale(1.08);
+    }
+
+    .custom-play-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: #FFFFFF;
+      margin-left: 3px;
+    }
+
+    .video-expand-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .btn-expand-video {
+      background: none;
+      border: 1px solid var(--border-medium);
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* MCQ Option Card */
+    .mcq-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mcq-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--bg-secondary);
+      border: 1.5px solid var(--border-medium);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mcq-btn:hover:not(:disabled) {
+      border-color: var(--accent-color);
+      background-color: var(--accent-light);
+    }
+
+    .mcq-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-medium);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .mcq-btn.correct {
+      background: var(--color-success-bg);
+      border-color: var(--color-success);
+      color: var(--color-success);
+      font-weight: 600;
+    }
+
+    .mcq-btn.correct .mcq-badge {
+      background: var(--color-success);
+      border-color: var(--color-success);
+      color: #FFFFFF;
+    }
+
+    .mcq-btn.incorrect {
+      background: var(--color-error-bg);
+      border-color: var(--color-error);
+      color: var(--color-error);
+      font-weight: 600;
+    }
+
+    .mcq-btn.incorrect .mcq-badge {
+      background: var(--color-error);
+      border-color: var(--color-error);
+      color: #FFFFFF;
+    }
+
+    .mcq-explanation-box {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .mcq-explanation-box.success {
+      background: var(--color-success-bg);
+      border: 1px solid #A3D9B8;
+      color: #125430;
+    }
+
+    .mcq-explanation-box.danger {
+      background: var(--color-error-bg);
+      border: 1px solid #F8B4B4;
+      color: #8C1D1D;
+    }
+
+    /* Bottom Navigation Bar (4 Items) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--app-max-width);
+      height: var(--bottomnav-height);
+      background-color: var(--bg-primary);
+      border-top: 1px solid var(--border-subtle);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      z-index: 100;
+    }
+
+    .bottom-nav-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 4px 0;
+      position: relative;
+    }
+
+    .bottom-nav-link.active {
+      color: var(--accent-color);
+      font-weight: 700;
+    }
+
+    .bottom-nav-link.active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 28px;
+      height: 3px;
+      background: var(--accent-color);
+      border-radius: 0 0 3px 3px;
+    }
+
+    .bottom-nav-link svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 300;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    @media (min-width: 680px) {
+      .modal-backdrop { align-items: center; }
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-dialog {
+      width: 100%;
+      max-width: var(--app-max-width);
+      max-height: 88vh;
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    @media (min-width: 680px) {
+      .modal-dialog { border-radius: var(--radius-lg); }
+    }
+
+    .modal-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .spinner {
+      width: 38px;
+      height: 38px;
+      border: 3px solid var(--accent-light);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 40px auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <button class="icon-btn" id="btn-open-drawer" aria-label="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a href="index.html" class="brand-title">You<span>Buddy</span></a>
+      <a href="profile.html" class="avatar-btn" id="top-avatar-btn">E</a>
+    </header>
+
+    <!-- Side Drawer -->
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+    <aside class="side-drawer" id="side-drawer">
+      <div class="drawer-header">
+        <div class="brand-title">You<span>Buddy</span></div>
+        <button class="icon-btn" id="btn-close-drawer" aria-label="Close">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="flex: 1; padding: 12px 0;">
+        <button class="drawer-menu-item" id="drawer-choose-uni">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/></svg>
+          <span>Choose University</span>
+        </button>
+        <button class="drawer-menu-item" id="drawer-install-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Install App</span>
+        </button>
+        <a href="profile.html" class="drawer-menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>My Profile</span>
+        </a>
+        <div style="height: 1px; background: var(--border-subtle); margin: 8px 16px;"></div>
+        <a href="admin.html" class="drawer-menu-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Admin Console</span>
+        </a>
+      </div>
+      <div style="padding: 16px; border-top: 1px solid var(--border-subtle); font-size: 0.75rem; color: var(--text-muted);">
+        YouBuddy v1.0.0 — Engineering Student App
+      </div>
+    </aside>
+
+    <!-- Main Feed -->
+    <main class="feed-main">
+      <div class="feed-container" id="feed-list">
+        <!-- Rendered Posts -->
+      </div>
+    </main>
+
+    <!-- Bottom Navigation Bar (4 Items) -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="bottom-nav-link active">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
+      </a>
+      <a href="notes.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Notes</span>
+      </a>
+      <a href="courses.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <span>Courses</span>
+      </a>
+      <a href="games.html" class="bottom-nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4m7-2h.01m3-2h.01"/></svg>
+        <span>Games</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- University Selector Modal -->
+  <div class="modal-backdrop" id="uni-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Select Your University</h3>
+        <button class="icon-btn" id="close-uni-modal-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="uni-modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    // ========================================================================
+    // Self-Contained Feed & Seen Tracking Engine
+    // ========================================================================
+    const DB_KEY = 'youbuddy_db_v1';
+    let deferredInstallPrompt = null;
+    let observer = null;
+    let dwellTimers = new Map();
+
+    function getDb() {
+      try {
+        let db = JSON.parse(localStorage.getItem(DB_KEY));
+        if (!db) {
+          db = getInitialSeed();
+          localStorage.setItem(DB_KEY, JSON.stringify(db));
+        } else if (db.posts && db.posts.length > 0 && db.posts.some(p => p.id === 'post-1' || p.id === 'post-pinned-1')) {
+          // Wipe any legacy hardcoded dummy posts from prior visits
+          db.posts = [];
+          localStorage.setItem(DB_KEY, JSON.stringify(db));
+        }
+        return db;
+      } catch (e) {
+        return getInitialSeed();
+      }
+    }
+
+    function saveDb(db) {
+      localStorage.setItem(DB_KEY, JSON.stringify(db));
+    }
+
+    function getInitialSeed() {
+      return {
+        universities: [
+          { id: "uni-dbatu", name: "Dr. Babasaheb Ambedkar Technological University", short_code: "DBATU" },
+          { id: "uni-solapur", name: "Punyashlok Ahilyadevi Holkar Solapur University", short_code: "PAHSU" }
+        ],
+        academic_years: [
+          { id: "year-dbatu-1", university_id: "uni-dbatu", name: "First Year", year_number: 1, has_streams: false },
+          { id: "year-dbatu-2", university_id: "uni-dbatu", name: "Second Year", year_number: 2, has_streams: true }
+        ],
+        streams: [
+          { id: "stream-dbatu-cse", year_id: "year-dbatu-2", name: "Computer Science & Engineering", code: "SY CSE" },
+          { id: "stream-dbatu-entc", year_id: "year-dbatu-2", name: "Electronics & Telecommunication", code: "SY ENTC" }
+        ],
+        subjects: [
+          { id: "sub-1", year_id: "year-dbatu-1", name: "Engineering Mathematics I", code: "24AF1000BS101", group_name: "Group A", units_count: 5 },
+          { id: "sub-2", year_id: "year-dbatu-1", name: "Engineering Chemistry", code: "24AF1CHEBS102", group_name: "Group A", units_count: 5 },
+          { id: "sub-3", year_id: "year-dbatu-1", name: "Engineering Mechanics", code: "24AF1EMES104", group_name: "Group A", units_count: 5 },
+          { id: "sub-4", year_id: "year-dbatu-1", name: "Engineering Physics", code: "24AF2PHYBS202", group_name: "Group B", units_count: 5 }
+        ],
+        topics: [
+          { id: "top-1", subject_id: "sub-1", title: "Unit 1: Matrices and Linear Equations", pdf_url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf", page_count: 32 }
+        ],
+        posts: [], // NO hardcoded posts — fetched exclusively from Supabase
+        post_views: {},
+        mcq_responses: {},
+        profile: {
+          full_name: "Engineering Student",
+          headline: "B.Tech Computer Science @ DBATU",
+          bio: "Learning data structures, algorithm design, and software engineering.",
+          selected_university_id: "uni-dbatu",
+          selected_year_id: "year-dbatu-1",
+          selected_stream_id: null
+        }
+      };
+    }
+
+    // Drawer Controller
+    const drawer = document.getElementById('side-drawer');
+    const backdrop = document.getElementById('drawer-backdrop');
+    document.getElementById('btn-open-drawer').addEventListener('click', () => {
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    });
+    document.getElementById('btn-close-drawer').addEventListener('click', () => {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    });
+    backdrop.addEventListener('click', () => {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+    });
+
+    // PWA Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+    });
+
+    document.getElementById('drawer-install-btn').addEventListener('click', () => {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+      } else {
+        alert("To install on iOS: Tap Share icon at bottom of Safari -> 'Add to Home Screen'.\n\nTo install on Android Chrome: Tap menu (⋮) -> 'Install app'.");
+      }
+    });
+
+    // ========================================================================
+    // Supabase Live Client Initialization (Dynamic from localStorage)
+    // ========================================================================
+    const SUPABASE_URL = localStorage.getItem('youbuddy_supabase_url') || 'https://nstbirdzdcbspiccbslz.supabase.co';
+    const SUPABASE_ANON_KEY = localStorage.getItem('youbuddy_supabase_anon_key') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zdGJpcmR6ZGNic3BpY2Nic2x6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNjI2NzEsImV4cCI6MjEwMzkzODY3MX0.jOdrAkIlbtxUKQhoXczU4wD5Ht3CFBCY0Blqbv55tIo';
+    let supabaseClient = null;
+    let currentLivePosts = [];
+
+    if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_URL.includes('your-supabase-project')) {
+      try {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('[Supabase] Live client initialized:', SUPABASE_URL);
+      } catch (err) {
+        console.warn('[Supabase] Initialization error:', err);
+      }
+    }
+
+    // Feed Render with Seen Tracking
+    function markPostSeen(postId, action = 'impression') {
+      const db = getDb();
+      if (!db.post_views) db.post_views = {};
+      db.post_views[postId] = {
+        viewed_at: new Date().toISOString(),
+        action: action
+      };
+      saveDb(db);
+
+      if (supabaseClient) {
+        supabaseClient.rpc('mark_post_seen', {
+          p_post_id: postId,
+          p_interaction_type: action
+        }).catch(err => console.warn('[Supabase seen track notice]:', err));
+      }
+    }
+
+    async function renderFeed() {
+      const feedContainer = document.getElementById('feed-list');
+      if (!feedContainer) return;
+
+      const db = getDb();
+      const user = db.profile || { full_name: 'E' };
+      const topAvatar = document.getElementById('top-avatar-btn');
+      if (topAvatar) topAvatar.textContent = (user.full_name || 'E')[0].toUpperCase();
+
+      // 1. If Supabase is not configured, show guidance (Zero hardcoded data)
+      if (!supabaseClient) {
+        feedContainer.innerHTML = `
+          <div style="border: 2px dashed var(--accent-border); padding: 36px 20px; background: var(--accent-light); border-radius: var(--radius-lg); margin: 24px 12px; text-align: center;">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">⚡</div>
+            <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--accent-color); margin-bottom: 8px;">Supabase Backend Required</h2>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 18px; line-height: 1.5; max-width: 440px; margin-left: auto; margin-right: auto;">
+              All hardcoded mock data has been removed. Configure your live Supabase credentials in the Admin Console to fetch real-time feed posts and MCQs.
+            </p>
+            <a href="admin.html#tab-db-config" style="display: inline-block; background: var(--accent-color); color: #fff; text-decoration: none; padding: 10px 20px; font-weight: 600; font-size: 0.88rem; border-radius: var(--radius-md); box-shadow: var(--shadow-card);">
+              Open Supabase Settings
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      // 2. Show loading spinner while querying Supabase
+      feedContainer.innerHTML = '<div class="spinner"></div>';
+
+      let allPosts = [];
+      try {
+        const { data, error } = await supabaseClient
+          .from('posts')
+          .select(`
+            *,
+            mcq_options (*)
+          `)
+          .eq('is_published', true)
+          .order('is_pinned', { ascending: false })
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        allPosts = data || [];
+        
+        allPosts.forEach(p => {
+          if (Array.isArray(p.mcq_options)) {
+            p.options = p.mcq_options.sort((a, b) => (a.display_order || 0) - (b.display_order || 0) || a.option_letter.localeCompare(b.option_letter));
+          } else {
+            p.options = [];
+          }
+        });
+      } catch (err) {
+        console.error('[Supabase Feed Error]:', err);
+        feedContainer.innerHTML = `
+          <div style="padding: 36px 20px; text-align: center; color: var(--color-error);">
+            <div style="font-size: 2rem; margin-bottom: 8px;">⚠️</div>
+            <p style="font-weight: 700; margin-bottom: 6px;">Failed to fetch feed from Supabase</p>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">${escapeHtml(err.message || 'Connection error')}</p>
+            <button onclick="renderFeed()" style="background: var(--bg-hover); border: 1px solid var(--border-medium); padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: 600;">Retry</button>
+          </div>
+        `;
+        return;
+      }
+
+      currentLivePosts = allPosts;
+
+      // 3. If Supabase has zero posts, show clean empty state (no fake fallback)
+      if (allPosts.length === 0) {
+        feedContainer.innerHTML = `
+          <div style="padding: 44px 20px; text-align: center; color: var(--text-secondary);">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">📭</div>
+            <p style="font-weight: 700; font-size: 1.05rem; color: var(--text-primary); margin-bottom: 6px;">No posts in Supabase yet.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; max-width: 440px; margin: 0 auto 16px;">
+              Run the SQL migration <code style="background: var(--bg-hover); padding: 3px 6px; border-radius: 4px; font-weight: 600;">20260820000002_seed_dummy_data.sql</code> in your Supabase SQL Editor to populate sample posts, or create a post via the Admin Console.
+            </p>
+            <a href="admin.html" style="display: inline-block; background: var(--bg-hover); border: 1px solid var(--border-medium); color: var(--text-primary); text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">Create Post in Admin</a>
+          </div>
+        `;
+        return;
+      }
+
+      const views = db.post_views || {};
+      const responses = db.mcq_responses || {};
+
+      // 1. Pinned Posts (Always Top)
+      const pinned = allPosts.filter(p => p.is_pinned);
+      // 2. Unseen Posts (Newest First)
+      const unseen = allPosts.filter(p => !p.is_pinned && !views[p.id]).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+      // 3. Recycled Seen Posts (Oldest Seen First)
+      const recycled = allPosts.filter(p => !p.is_pinned && views[p.id]).sort((a,b) => new Date(views[a.id].viewed_at) - new Date(views[b.id].viewed_at));
+
+      const finalPosts = [...pinned, ...unseen, ...recycled];
+
+      feedContainer.innerHTML = finalPosts.map(post => {
+        const isPinned = post.type === 'pinned_announcement' || post.is_pinned;
+        const isTip = post.type === 'study_tip';
+        const isYt = post.type === 'youtube_video';
+        const isMcq = post.type === 'mcq';
+        const resp = responses[post.id];
+
+        let specificHtml = '';
+        if (isPinned) {
+          specificHtml = `
+            <div class="pinned-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+              <span>Pinned Announcement</span>
+            </div>
+            <h2 class="post-title">${escapeHtml(post.title)}</h2>
+            <div class="post-content">${escapeHtml(post.content || '')}</div>
+          `;
+        } else if (isTip) {
+          specificHtml = `
+            <div class="study-tip-tag">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+              <span>Study Tip</span>
+            </div>
+            <h2 class="post-title">${escapeHtml(post.title)}</h2>
+            <div class="post-content">${escapeHtml(post.content || '')}</div>
+          `;
+        } else if (isYt) {
+          const videoId = post.extra_data?.youtube_video_id || (post.media_url?.match(/v=([^&]+)/)?.[1] || 'x3c1ih2NJEg');
+          const thumb = post.thumbnail_url || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+          specificHtml = `
+            <h2 class="post-title">${escapeHtml(post.title)}</h2>
+            ${post.content ? `<div class="post-content">${escapeHtml(post.content)}</div>` : ''}
+            <div class="video-preview" data-vid="${videoId}" data-pid="${post.id}">
+              <img src="${thumb}" alt="YouTube Video" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'"/>
+              <div class="custom-play-overlay">
+                <div class="custom-play-btn">
+                  <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="video-expand-row">
+              <button class="btn-expand-video" data-vid="${videoId}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                Expand Landscape
+              </button>
+            </div>
+          `;
+        } else if (isMcq) {
+          const options = post.options || post.mcq_options || [];
+          const answered = !!resp;
+          let optHtml = options.map(o => {
+            let cls = 'mcq-btn';
+            if (answered) {
+              if (o.id === resp.option_id) cls += resp.is_correct ? ' correct' : ' incorrect';
+              else if (o.is_correct) cls += ' correct';
+            }
+            return `
+              <button class="${cls}" data-pid="${post.id}" data-oid="${o.id}" ${answered ? 'disabled' : ''}>
+                <span class="mcq-badge">${o.option_letter}</span>
+                <span>${escapeHtml(o.option_text)}</span>
+              </button>
+            `;
+          }).join('');
+
+          let explanationHtml = '';
+          if (answered) {
+            const correctOpt = options.find(o => o.is_correct);
+            explanationHtml = `
+              <div class="mcq-explanation-box ${resp.is_correct ? 'success' : 'danger'}">
+                <strong>${resp.is_correct ? 'Correct Answer!' : 'Incorrect'}</strong>
+                <p style="margin-top:4px;">${escapeHtml(correctOpt?.explanation || '')}</p>
+              </div>
+            `;
+          }
+
+          specificHtml = `
+            <h2 class="post-title">${escapeHtml(post.title)}</h2>
+            <div class="post-content">${escapeHtml(post.content || '')}</div>
+            <div class="mcq-options-list">${optHtml}</div>
+            ${explanationHtml}
+          `;
+        } else {
+          specificHtml = `
+            <h2 class="post-title">${escapeHtml(post.title)}</h2>
+            <div class="post-content">${escapeHtml(post.content || '')}</div>
+            ${post.media_url ? `<img src="${post.media_url}" style="width:100%; border-radius:8px; margin-top:10px;" loading="lazy"/>` : ''}
+          `;
+        }
+
+        return `
+          <article class="post-card ${isPinned ? 'post-pinned' : ''}" data-post-id="${post.id}">
+            <div class="post-header">
+              <div class="author-info">
+                <div class="author-avatar">${(post.author_name || 'Y')[0]}</div>
+                <div>
+                  <div style="font-weight:700; font-size:0.9rem;">${escapeHtml(post.author_name || 'YouBuddy')}</div>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHtml(post.extra_data?.author_role || 'Academic Updates')}</div>
+                </div>
+              </div>
+            </div>
+            ${specificHtml}
+          </article>
+        `;
+      }).join('');
+
+      attachListeners();
+      setupObserver();
+    }
+
+    function attachListeners() {
+      // YouTube Inline Embed Play
+      document.querySelectorAll('.video-preview').forEach(el => {
+        el.addEventListener('click', () => {
+          const vid = el.getAttribute('data-vid');
+          const pid = el.getAttribute('data-pid');
+          markPostSeen(pid, 'video_play');
+          el.innerHTML = `<iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&playsinline=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+        });
+      });
+
+      // Expand Landscape
+      document.querySelectorAll('.btn-expand-video').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const vid = btn.getAttribute('data-vid');
+          const card = btn.closest('.post-card');
+          const preview = card.querySelector('.video-preview');
+          preview.innerHTML = `<iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&playsinline=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+          const iframe = preview.querySelector('iframe');
+          if (iframe.requestFullscreen) iframe.requestFullscreen();
+          if (screen.orientation?.lock) screen.orientation.lock('landscape').catch(() => {});
+        });
+      });
+
+      // MCQ Click
+      document.querySelectorAll('.mcq-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pid = btn.getAttribute('data-pid');
+          const oid = btn.getAttribute('data-oid');
+          const post = currentLivePosts.find(p => p.id === pid);
+          const options = post?.options || post?.mcq_options || [];
+          const opt = options.find(o => o.id === oid);
+          if (!opt) return;
+
+          const db = getDb();
+          if (!db.mcq_responses) db.mcq_responses = {};
+          db.mcq_responses[pid] = {
+            option_id: oid,
+            is_correct: !!opt.is_correct
+          };
+          saveDb(db);
+          markPostSeen(pid, 'mcq_vote');
+          renderFeed();
+        });
+      });
+    }
+
+    function setupObserver() {
+      if (observer) observer.disconnect();
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const pid = entry.target.getAttribute('data-post-id');
+          if (!pid) return;
+
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            if (!dwellTimers.has(pid)) {
+              const timer = setTimeout(() => {
+                markPostSeen(pid, 'impression');
+                dwellTimers.delete(pid);
+              }, 1500);
+              dwellTimers.set(pid, timer);
+            }
+          } else {
+            if (dwellTimers.has(pid)) {
+              clearTimeout(dwellTimers.get(pid));
+              dwellTimers.delete(pid);
+            }
+          }
+        });
+      }, { threshold: [0.5] });
+
+      document.querySelectorAll('.post-card').forEach(c => observer.observe(c));
+    }
+
+    // University Modal
+    const uniModal = document.getElementById('uni-modal');
+    document.getElementById('drawer-choose-uni').addEventListener('click', () => {
+      drawer.classList.remove('open');
+      backdrop.classList.remove('open');
+      renderUniModal();
+      uniModal.classList.add('open');
+    });
+    document.getElementById('close-uni-modal-btn').addEventListener('click', () => {
+      uniModal.classList.remove('open');
+    });
+
+    function renderUniModal() {
+      const db = getDb();
+      const body = document.getElementById('uni-modal-body');
+      const unis = db.universities || [];
+
+      body.innerHTML = unis.map(u => `
+        <div style="padding:14px; border:1px solid var(--border-medium); border-radius:8px; margin-bottom:10px; cursor:pointer;" onclick="selectUni('${u.id}')">
+          <div style="font-weight:700;">${escapeHtml(u.name)}</div>
+          <div style="font-size:0.8rem; color:var(--accent-color); font-weight:600;">${escapeHtml(u.short_code)}</div>
+        </div>
+      `).join('');
+    }
+
+    window.selectUni = function(uniId) {
+      const db = getDb();
+      if (!db.profile) db.profile = {};
+      db.profile.selected_university_id = uniId;
+      saveDb(db);
+      uniModal.classList.remove('open');
+      alert('Active university updated!');
+    };
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Initialize
+    renderFeed();
+  </script>
+</body>
+</html>
